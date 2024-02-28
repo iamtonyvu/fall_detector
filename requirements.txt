@@ -2,3 +2,13 @@ os
 time
 streamlit
 slack_sdk
+ultralytics
+YOLO
+cv2
+PIL
+Image
+config
+streamlit_webrtc
+webrtc_streamer
+numpy
+av
