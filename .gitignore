@@ -1,1 +1,6 @@
 raw_data/
+
+**/__pycache__/**
+
+config.yaml
+fall_detector.egg-info

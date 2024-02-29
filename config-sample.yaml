@@ -1,0 +1,19 @@
+classNames:
+  '0':
+    name: 'Falling'
+    color: [176,58,46]
+  '1':
+    name: 'Standing'
+    color: [46, 204, 113]
+  '2':
+    name: 'Sitting'
+    color: [241, 196, 15]
+model:
+  path: 'path'
+  confidence: 50
+  confidence_visibility: False
+  compression: 70
+  image_test: 'path'
+api:
+  address: '0.0.0.0'
+  port: 8000
