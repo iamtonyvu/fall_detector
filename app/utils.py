@@ -3,11 +3,11 @@ import streamlit as st
 import cv2
 from PIL import Image
 from config import *
-from streamlit_webrtc import webrtc_streamer
+from streamlit_webrtc import webrtc_streamer, webrtc_streamer
 import numpy as np
 import av
 
-def _display_detected_frames(conf, model, st_frame, image):
+def _display_detected_frames(conf, model, st_count, st_frame, image):
     """
     Display the detected objects on a video frame using the YOLOv8 model.
     :param conf (float): Confidence threshold for object detection.
@@ -30,20 +30,19 @@ def _display_detected_frames(conf, model, st_frame, image):
                    )
 
 
-@st.cache_resource
-def load_model(model_path):
-    """
-    Loads a YOLO object detection model from the specified model_path.
+# # @st.cache_resource
+# def load_model(model_path):
+#     """
+#     Loads a YOLO object detection model from the specified model_path.
 
-    Parameters:
-        model_path (str): The path to the YOLO model file.
+#     Parameters:
+#         model_path (str): The path to the YOLO model file.
 
-    Returns:
-        A YOLO object detection model.
-    """
-    model = YOLO(model_path)
-    return model
-
+#     Returns:
+#         A YOLO object detection model.
+#     """
+#     model = YOLO(model_path)
+#     return model
 
 def infer_uploaded_webcam(conf, model):
     """
@@ -57,6 +56,7 @@ def infer_uploaded_webcam(conf, model):
             label="Stop running"
         )
         vid_cap = cv2.VideoCapture(0)  # local camera
+        st_count = st.empty()
         st_frame = st.empty()
 
         while not flag:
@@ -66,6 +66,7 @@ def infer_uploaded_webcam(conf, model):
                     _display_detected_frames(
                         conf,
                         model,
+                        st_count,
                         st_frame,
                         image
                     )
@@ -85,6 +86,7 @@ def play_webcam(conf, model):
     Raises:
         None
     """
+    # st.sidebar.title("Webcam Object Detection")
 
     def video_frame_callback(frame: av.VideoFrame) -> av.VideoFrame:
         image = frame.to_ndarray(format="bgr24")
@@ -103,6 +105,8 @@ def play_webcam(conf, model):
 
             # Plot the detected objects on the video frame
             res_plotted = res[0].plot()
+            # print(f'resplotted: {res_plotted}')
+
 
         return av.VideoFrame.from_ndarray(res_plotted, format="bgr24")
 
