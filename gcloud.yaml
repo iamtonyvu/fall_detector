@@ -1,0 +1,28 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: fall-detector-api
+  annotations:
+    run.googleapis.com/launch-stage: BETA
+spec:
+  template:
+    metadata:
+    spec:
+      containers:
+      - image: europe-west1-docker.pkg.dev/macro-pulsar-410607/fall-detector/api:prod
+        resources:
+            limits:
+              memory: 2Gi
+        env:
+        - name: CONFIG_FILE
+          value: /config/config-docker.yaml
+        volumeMounts:
+        - mountPath: /config
+          name: configuration
+      volumes:
+      - name: configuration
+        secret:
+          items:
+          - key: latest
+            path: config-docker.yaml
+          secretName: fall-detector-secret

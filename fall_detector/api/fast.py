@@ -31,6 +31,11 @@ async def fall_detection(websocket: WebSocket):
     except WebSocketDisconnect:
         await websocket.close()
 
+@app.get("/")
+def healthcheck():
+    return {'success': True}
+
+
 import uvicorn
 if __name__ == "__main__":
    uvicorn.run("fast:app", host=API_ADDRESS, port=API_PORT, reload=True)

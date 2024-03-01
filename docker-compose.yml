@@ -1,0 +1,10 @@
+services:
+  backend-api:
+    image: europe-west1-docker.pkg.dev/macro-pulsar-410607/fall-detector/api:prod
+    volumes:
+      - ./config-docker.yaml:/config/config-docker.yaml
+    environment:
+      - PORT=8000
+      - CONFIG_FILE=/config/config-docker.yaml
+    ports:
+      - 8000:8000
