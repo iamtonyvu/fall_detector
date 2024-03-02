@@ -33,6 +33,20 @@ def detection(model: YOLO, img: cv2.typing.MatLike, classNames: dict, confidence
                     cv2.putText(img, f"{classNames.get(cls).get('name')} {confidence}", org, font, fontScale, classNames.get(cls).get('color'), thickness)
         return img
 
+def detection_json(model: YOLO, img: cv2.typing.MatLike, classNames: dict, confidence_indice: int = 50, show_confidence: bool = False) -> dict:
+    results = model.predict(img, classes=MODEL_CLASSES, verbose=MODEL_VERBOSE)
+
+    # coordinates
+    detections = {}
+    for r in results:
+        boxes = r.boxes
+
+        for box in boxes:
+            confidence = math.ceil((box.conf[0]*100))/100
+            if confidence >= confidence_indice/100:
+                cls = str(int(box.cls[0]))
+                detections[cls] = classNames.get(cls)
+        return detections
 
 if __name__ == '__main__':
     model = YOLO(MODEL_PATCH)

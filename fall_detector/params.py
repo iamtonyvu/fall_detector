@@ -12,6 +12,7 @@ with open(os.environ.get("CONFIG_FILE")) as stream:
         MODEL_IMAGE_TEST = conf_yaml['model']['image_test']
         MODEL_VERBOSE = bool(conf_yaml['model']['verbose'])
         MODEL_CLASSES = conf_yaml['model']['classes_detect']
+        MODEL_TIME_ALERT = conf_yaml['model']['time_alert']
         API_ADDRESS = conf_yaml['api']['address']
         API_PORT = conf_yaml['api']['port']
     except yaml.YAMLError as exc:
