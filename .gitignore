@@ -6,3 +6,4 @@ model
 config-docker.yaml
 config.yaml
 fall_detector.egg-info
+.DS_Store
