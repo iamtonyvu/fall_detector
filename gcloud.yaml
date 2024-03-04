@@ -7,11 +7,14 @@ metadata:
 spec:
   template:
     metadata:
+      annotations:
+        autoscaling.knative.dev/maxScale: '1'
     spec:
       containers:
       - image: europe-west1-docker.pkg.dev/macro-pulsar-410607/fall-detector/api:prod
         resources:
             limits:
+              cpu: 2000m
               memory: 2Gi
         env:
         - name: CONFIG_FILE

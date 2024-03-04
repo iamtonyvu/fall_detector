@@ -2,8 +2,8 @@ const IMAGE_INTERVAL_MS = 1000;
 
 function createResponse(data) {
   data.event.forEach(event => {
-    if(chat.children.length >= (video.videoHeight/72)){
-      chat.removeChild(chat.firstElementChild)
+    if(chat.children.length > 0 && chat.children[0].clientHeight * (chat.children.length+2)  >= video.clientHeight){
+      chat.removeChild(chat.lastElementChild)
     }
     var tag = document.createElement("div");
     tag.classList.add("message");
@@ -31,7 +31,8 @@ function createResponse(data) {
     +':'+date.getSeconds().toLocaleString(undefined, {minimumIntegerDigits: 2}));
     span.appendChild(time)
     tag.appendChild(span)
-    chat.appendChild(tag)
+    chat.insertBefore(tag, chat.childNodes[0]);
+    //chat.appendChild(tag)
   });
 
 }
@@ -91,7 +92,7 @@ const chat = document.getElementById('chat');
 
 const startDetection = (video, canvas, deviceId) => {
   var proto;
-  if(document.location.protocol == 'http'){
+  if(document.location.protocol == 'http:'){
     proto = 'ws';
   } else {
     proto = 'wss';
