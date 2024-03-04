@@ -64,7 +64,7 @@ async def fall_detection_json(websocket: WebSocket, speed: int):
     except WebSocketDisconnect:
         await websocket.close()
 
-app.mount("/", StaticFiles(directory=FRONTEND_PATH, html=True), name="frondend")
+app.mount("/", StaticFiles(directory=FRONTEND_PATH, html=True), name="frontend")
 
 
 import uvicorn
