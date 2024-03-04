@@ -90,7 +90,13 @@ const chat = document.getElementById('chat');
 
 
 const startDetection = (video, canvas, deviceId) => {
-  const socket = new WebSocket('ws://'+window.location.hostname+':'+window.location.port+'/fall-detection-classes');
+  var proto;
+  if(document.location.protocol == 'http'){
+    proto = 'ws';
+  } else {
+    proto = 'wss';
+  }
+  const socket = new WebSocket(proto+'://'+window.location.hostname+':'+window.location.port+'/fall-detection-classes');
   socket.binaryType = "arraybuffer";
   let intervalId;
 
