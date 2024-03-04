@@ -91,7 +91,7 @@ const chat = document.getElementById('chat');
 
 const startDetection = (video, canvas, deviceId) => {
   var proto;
-  if(document.location.protocol == 'http'){
+  if(document.location.protocol == 'http:'){
     proto = 'ws';
   } else {
     proto = 'wss';
