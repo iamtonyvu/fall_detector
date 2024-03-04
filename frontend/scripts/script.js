@@ -1,4 +1,4 @@
-const IMAGE_INTERVAL_MS = 1000;
+//const IMAGE_INTERVAL_MS = 1000;
 
 function createResponse(data) {
   data.event.forEach(event => {
@@ -90,14 +90,14 @@ function encode (input) {
 const chat = document.getElementById('chat');
 
 
-const startDetection = (video, canvas, deviceId) => {
+const startDetection = (video, canvas, deviceId, speed) => {
   var proto;
   if(document.location.protocol == 'http:'){
     proto = 'ws';
   } else {
     proto = 'wss';
   }
-  const socket = new WebSocket(proto+'://'+window.location.hostname+':'+window.location.port+'/fall-detection-classes');
+  const socket = new WebSocket(proto+'://'+window.location.hostname+':'+window.location.port+'/fall-detection-classes/'+speed);
   socket.binaryType = "arraybuffer";
   let intervalId;
 
@@ -134,7 +134,7 @@ const startDetection = (video, canvas, deviceId) => {
 
         // Convert it to JPEG and send it to the WebSocket
         canvas.toBlob((blob) => socket.send(blob), 'image/jpeg', 0.8);
-        }, IMAGE_INTERVAL_MS);
+        }, speed);
       });
     });
   });
@@ -193,6 +193,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
   const video = document.getElementById('video');
   const canvas = document.getElementById('canvas');
   const cameraSelect = document.getElementById('camera-select');
+  const speedSelect = document.getElementById('speed-select');
   let socket;
 
   // List available cameras and fill select
@@ -217,9 +218,9 @@ window.addEventListener('DOMContentLoaded', (event) => {
     if (document.getElementById("button-start").disabled) {
       socket.close();
     } else {
-
+      //const IMAGE_INTERVAL_MS = speedSelect.value;
       const deviceId = cameraSelect.value;
-      socket = startDetection(video, canvas, deviceId);
+      socket = startDetection(video, canvas, deviceId, speedSelect.value);
     }
   });
 

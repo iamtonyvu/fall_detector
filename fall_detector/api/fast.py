@@ -15,7 +15,7 @@ model = YOLO(MODEL_PATCH)
 
 encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), MODEL_COMPRESSION]
 
-async def detect(websocket: WebSocket, queue: asyncio.Queue):
+async def detect(websocket: WebSocket, speed: int):
     alert_send = False
     falling_time = 0
     while True:
@@ -29,7 +29,7 @@ async def detect(websocket: WebSocket, queue: asyncio.Queue):
         ret, buffer = cv2.imencode('.jpg', img, encode_param)
         await websocket.send_bytes(buffer.tobytes())
 
-async def detect_json(websocket: WebSocket, queue: asyncio.Queue):
+async def detect_json(websocket: WebSocket, speed: int):
     alert_send = False
     falling_time = 0
     while True:
@@ -37,28 +37,28 @@ async def detect_json(websocket: WebSocket, queue: asyncio.Queue):
         data = np.frombuffer(bytes, dtype=np.uint8)
         img = cv2.imdecode(data, 1)
         img, detections = detection_json(model, img, CLASS_NAMES, MODEL_CONFIDENCE, MODEL_CONFIDENCE_VISIBILITY)
-        if alert_send == False and (falling_time := fall_detection_time(detections, falling_time)) == MODEL_TIME_ALERT:
+        if alert_send == False and (falling_time := fall_detection_time(detections, falling_time)) == (MODEL_TIME_ALERT * (1000/speed)):
             print(ALERT)
             await websocket.send_json(build_message('alert', [ALERT]))
             alert_send = True
         await websocket.send_json(build_message('message', list(detections.values())))
 
-@app.websocket("/fall-detection")
-async def fall_detection(websocket: WebSocket):
+@app.websocket("/fall-detection/{speed}")
+async def fall_detection(websocket: WebSocket, speed: int):
     await websocket.accept()
     try:
         while True:
-            await detect(websocket, None)
+            await detect(websocket, speed)
 
     except WebSocketDisconnect:
         await websocket.close()
 
-@app.websocket("/fall-detection-classes")
-async def fall_detection_json(websocket: WebSocket):
+@app.websocket("/fall-detection-classes/{speed}")
+async def fall_detection_json(websocket: WebSocket, speed: int):
     await websocket.accept()
     try:
         while True:
-            await detect_json(websocket, None)
+            await detect_json(websocket, speed)
 
     except WebSocketDisconnect:
         await websocket.close()
