@@ -1,0 +1,11 @@
+FROM ultralytics/ultralytics:8.1.20-cpu
+
+COPY fall_detector /fall_detector
+COPY requirements_ultra.txt /requirements_ultra.txt
+COPY model /model
+COPY frontend /frontend
+WORKDIR /
+RUN pip install --no-cache-dir --upgrade pip
+RUN pip install --no-cache-dir -r requirements_ultra.txt
+RUN pip cache purge
+CMD uvicorn fall_detector.api.fast:app --host 0.0.0.0 --port $PORT
