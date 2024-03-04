@@ -41,9 +41,9 @@
             <button class="btn btn-danger" type="submit" id="button-stop" disabled>Stop</button>
           </div>
         </form>
-        <div class="position-relative">
-          <video id="video"></video>
-          <canvas id="canvas" class="position-absolute top-0 start-0"></canvas>
+        <div class="position-relative embed-responsive embed-responsive-16by9">
+          <video class="embed-responsive-item" id="video" style="width: 100%;"></video>
+          <canvas id="canvas" class="position-absolute top-0 start-0" style="display: none;"></canvas>
         </div>
       </div>
       <div id="chat" class="col-3">
