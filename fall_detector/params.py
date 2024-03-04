@@ -17,5 +17,7 @@ with open(os.environ.get("CONFIG_FILE")) as stream:
         API_ADDRESS = conf_yaml['api']['address']
         API_PORT = conf_yaml['api']['port']
         FRONTEND_PATH = conf_yaml['frontend']['path']
+        SLACK_TOKEN = conf_yaml['slack']['token']
+        SLACK_CHANNELID = conf_yaml['slack']['channelid']
     except yaml.YAMLError as exc:
         print(exc)

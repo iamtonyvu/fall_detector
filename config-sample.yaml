@@ -21,6 +21,7 @@ model:
   verbose: False
   classes_detect: [0,1,2]
   time_alert: 5
+  classes_detect: [0,1,2]
 api:
   address: '0.0.0.0'
   port: 8000

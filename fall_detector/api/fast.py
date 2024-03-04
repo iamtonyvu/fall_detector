@@ -7,6 +7,7 @@ from starlette.staticfiles import StaticFiles
 from fall_detector.params import *
 from fall_detector.utils.fall_detection import fall_detection_time
 from fall_detector.ml_logic.predict import detection, detection_json
+from fall_detector.alert_slack.alert_to_slack import alert
 from fall_detector.utils.fall_detection import build_message
 
 app = FastAPI()
@@ -14,6 +15,7 @@ app = FastAPI()
 model = YOLO(MODEL_PATCH)
 
 encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), MODEL_COMPRESSION]
+
 
 async def detect(websocket: WebSocket, queue: asyncio.Queue):
     alert_send = False
@@ -38,7 +40,7 @@ async def detect_json(websocket: WebSocket, queue: asyncio.Queue):
         img = cv2.imdecode(data, 1)
         img, detections = detection_json(model, img, CLASS_NAMES, MODEL_CONFIDENCE, MODEL_CONFIDENCE_VISIBILITY)
         if alert_send == False and (falling_time := fall_detection_time(detections, falling_time)) == MODEL_TIME_ALERT:
-            print(ALERT)
+            alert(img, encode_param)
             await websocket.send_json(build_message('alert', [ALERT]))
             alert_send = True
         await websocket.send_json(build_message('message', list(detections.values())))
