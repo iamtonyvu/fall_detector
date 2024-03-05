@@ -13,7 +13,9 @@ alert:
   text: 'Sending a alert !!!'
   color: [255, 0, 0]
 model:
-  path: 'path'
+  path:
+    '1': ''
+    '2': ''
   confidence: 50
   confidence_visibility: False
   compression: 70

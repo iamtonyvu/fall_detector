@@ -9,7 +9,9 @@ function createResponse(data) {
     tag.classList.add("message");
     tag.classList.add("row");
     var div =  document.createElement("div");
-    div.classList.add("col-10");
+    div.classList.add("col-xd-12");
+    div.classList.add("col-sm-10");
+    div.classList.add("col-xl-12");
     var p = document.createElement("h2");
     var text
     if(data.type == 'alert'){
@@ -23,7 +25,9 @@ function createResponse(data) {
     div.appendChild(p)
     tag.appendChild(div)
     var span = document.createElement("div");
-    span.classList.add("col-2");
+    span.classList.add("col-xd-12");
+    span.classList.add("col-sm-2");
+    span.classList.add("col-xl-12");
     span.classList.add("time-right");
     var date = new Date()
     time = document.createTextNode(date.getHours().toLocaleString(undefined, {minimumIntegerDigits: 2})
@@ -90,14 +94,14 @@ function encode (input) {
 const chat = document.getElementById('chat');
 
 
-const startDetection = (video, canvas, deviceId, speed) => {
+const startDetection = (video, canvas, deviceId, speed, model) => {
   var proto;
   if(document.location.protocol == 'http:'){
     proto = 'ws';
   } else {
     proto = 'wss';
   }
-  const socket = new WebSocket(proto+'://'+window.location.hostname+':'+window.location.port+'/fall-detection-classes/'+speed);
+  const socket = new WebSocket(proto+'://'+window.location.hostname+':'+window.location.port+'/fall-detection-classes/'+speed+'/'+model);
   socket.binaryType = "arraybuffer";
   let intervalId;
 
@@ -194,6 +198,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
   const canvas = document.getElementById('canvas');
   const cameraSelect = document.getElementById('camera-select');
   const speedSelect = document.getElementById('speed-select');
+  const modelSelect = document.getElementById('model-select');
   let socket;
 
   // List available cameras and fill select
@@ -220,7 +225,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
     } else {
       //const IMAGE_INTERVAL_MS = speedSelect.value;
       const deviceId = cameraSelect.value;
-      socket = startDetection(video, canvas, deviceId, speedSelect.value);
+      socket = startDetection(video, canvas, deviceId, speedSelect.value, modelSelect.value);
     }
   });
 
