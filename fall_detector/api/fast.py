@@ -16,53 +16,65 @@ model = YOLO(MODEL_PATCH)
 
 encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), MODEL_COMPRESSION]
 
-async def detect(websocket: WebSocket, speed: int):
-    alert_send = False
-    falling_time = 0
-    while True:
-        bytes = await websocket.receive_bytes()
-        data = np.frombuffer(bytes, dtype=np.uint8)
-        img = cv2.imdecode(data, 1)
-        img, detections = detection(model, img, CLASS_NAMES, MODEL_CONFIDENCE, MODEL_CONFIDENCE_VISIBILITY)
-        if alert_send == False and (falling_time := fall_detection_time(detections, falling_time)) == MODEL_TIME_ALERT:
-            print('Alert was sending')
-            alert_send = True
-        ret, buffer = cv2.imencode('.jpg', img, encode_param)
-        await websocket.send_bytes(buffer.tobytes())
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: list[WebSocket] = []
 
-async def detect_json(websocket: WebSocket, speed: int):
-    alert_send = False
-    falling_time = 0
-    while True:
-        bytes = await websocket.receive_bytes()
-        data = np.frombuffer(bytes, dtype=np.uint8)
-        img = cv2.imdecode(data, 1)
-        img, detections = detection_json(model, img, CLASS_NAMES, MODEL_CONFIDENCE, MODEL_CONFIDENCE_VISIBILITY)
-        if alert_send == False and (falling_time := fall_detection_time(detections, falling_time)) == (MODEL_TIME_ALERT * (1000/speed)):
-            alert(img, encode_param)
-            await websocket.send_json(build_message('alert', [ALERT]))
-            alert_send = True
-        await websocket.send_json(build_message('message', list(detections.values())))
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections.append(websocket)
+
+    def disconnect(self, websocket: WebSocket):
+        self.active_connections.remove(websocket)
+
+    async def send_image(self, message: str, websocket: WebSocket):
+        await websocket.send_bytes(message)
+
+    async def send_message(self, message: str):
+        for connection in self.active_connections:
+            await connection.send_json(message)
+
+manager = ConnectionManager()
 
 @app.websocket("/fall-detection/{speed}")
 async def fall_detection(websocket: WebSocket, speed: int):
-    await websocket.accept()
+    await manager.connect(websocket)
     try:
+        alert_send = False
+        falling_time = 0
         while True:
-            await detect(websocket, speed)
+            bytes = await websocket.receive_bytes()
+            data = np.frombuffer(bytes, dtype=np.uint8)
+            img = cv2.imdecode(data, 1)
+            img, detections = detection(model, img, CLASS_NAMES, MODEL_CONFIDENCE, MODEL_CONFIDENCE_VISIBILITY)
+            if alert_send == False and (falling_time := fall_detection_time(detections, falling_time)) == MODEL_TIME_ALERT:
+                print('Alert was sending')
+                alert_send = True
+            ret, buffer = cv2.imencode('.jpg', img, encode_param)
+            await manager.send_bytes(buffer.tobytes())
 
     except WebSocketDisconnect:
-        await websocket.close()
+        manager.disconnect(websocket)
 
 @app.websocket("/fall-detection-classes/{speed}")
 async def fall_detection_json(websocket: WebSocket, speed: int):
-    await websocket.accept()
+    await manager.connect(websocket)
     try:
+        alert_send = False
+        falling_time = 0
         while True:
-            await detect_json(websocket, speed)
+            bytes = await websocket.receive_bytes()
+            data = np.frombuffer(bytes, dtype=np.uint8)
+            img = cv2.imdecode(data, 1)
+            img, detections = detection_json(model, img, CLASS_NAMES, MODEL_CONFIDENCE, MODEL_CONFIDENCE_VISIBILITY)
+            if alert_send == False and (falling_time := fall_detection_time(detections, falling_time)) == (MODEL_TIME_ALERT * (1000/speed)):
+                alert(img, encode_param)
+                await manager.send_message(build_message('alert', [ALERT]))
+                alert_send = True
+            await manager.send_message(build_message('message', list(detections.values())))
 
     except WebSocketDisconnect:
-        await websocket.close()
+        manager.disconnect(websocket)
 
 app.mount("/", StaticFiles(directory=FRONTEND_PATH, html=True), name="frontend")
 
