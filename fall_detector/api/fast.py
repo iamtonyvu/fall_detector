@@ -12,7 +12,7 @@ from fall_detector.utils.fall_detection import build_message
 
 app = FastAPI()
 
-model = YOLO(MODEL_PATCH)
+#model = YOLO(MODEL_PATCH)
 
 encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), MODEL_COMPRESSION]
 
@@ -36,8 +36,9 @@ class ConnectionManager:
 
 manager = ConnectionManager()
 
-@app.websocket("/fall-detection/{speed}")
-async def fall_detection(websocket: WebSocket, speed: int):
+@app.websocket("/fall-detection/{speed}/{model}")
+async def fall_detection(websocket: WebSocket, speed: int, model: str):
+    model = YOLO(MODEL_PATCH[model])
     await manager.connect(websocket)
     try:
         alert_send = False
@@ -56,8 +57,9 @@ async def fall_detection(websocket: WebSocket, speed: int):
     except WebSocketDisconnect:
         manager.disconnect(websocket)
 
-@app.websocket("/fall-detection-classes/{speed}")
-async def fall_detection_json(websocket: WebSocket, speed: int):
+@app.websocket("/fall-detection-classes/{speed}/{model}")
+async def fall_detection_json(websocket: WebSocket, speed: int, model: str):
+    model = YOLO(MODEL_PATCH[model])
     await manager.connect(websocket)
     try:
         alert_send = False
