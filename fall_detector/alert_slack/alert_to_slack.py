@@ -8,7 +8,7 @@ def alert(img, encode_param):
     ret, buffer = cv2.imencode('.jpg', img, encode_param)
     client.files_upload_v2(
                 channel=SLACK_CHANNELID,
-                initial_comment = "Your grandmother fell down!",
-                filename = "falling",
+                initial_comment = ALERT['text'],
+                filename = "falling.jpg",
                 content = buffer.tobytes()
                 )

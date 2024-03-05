@@ -1,5 +1,10 @@
 //const IMAGE_INTERVAL_MS = 1000;
 
+function changeTitle(value) {
+  document.getElementById("titleTime").innerHTML = value
+
+}
+
 function createResponse(data) {
   data.event.forEach(event => {
     if(chat.children.length > 0 && chat.children[0].clientHeight * (chat.children.length+2)  >= video.clientHeight){
@@ -94,14 +99,14 @@ function encode (input) {
 const chat = document.getElementById('chat');
 
 
-const startDetection = (video, canvas, deviceId, speed, model) => {
+const startDetection = (video, canvas, deviceId, speed, wait, model) => {
   var proto;
   if(document.location.protocol == 'http:'){
     proto = 'ws';
   } else {
     proto = 'wss';
   }
-  const socket = new WebSocket(proto+'://'+window.location.hostname+':'+window.location.port+'/fall-detection-classes/'+speed+'/'+model);
+  const socket = new WebSocket(proto+'://'+window.location.hostname+':'+window.location.port+'/fall-detection-classes/'+speed+'/'+wait+'/'+model);
   socket.binaryType = "arraybuffer";
   let intervalId;
 
@@ -198,6 +203,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
   const canvas = document.getElementById('canvas');
   const cameraSelect = document.getElementById('camera-select');
   const speedSelect = document.getElementById('speed-select');
+  const waitSelect = document.getElementById('wait-select');
   const modelSelect = document.getElementById('model-select');
   let socket;
 
@@ -225,7 +231,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
     } else {
       //const IMAGE_INTERVAL_MS = speedSelect.value;
       const deviceId = cameraSelect.value;
-      socket = startDetection(video, canvas, deviceId, speedSelect.value, modelSelect.value);
+      socket = startDetection(video, canvas, deviceId, speedSelect.value, waitSelect.value, modelSelect.value);
     }
   });
 
