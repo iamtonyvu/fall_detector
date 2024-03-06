@@ -28,42 +28,49 @@
       color: #aaa;
     }
   </style>
-  <title>Fall Detector - Alert after falling for 5s</title>
+  <title>Fall Detector - Alert after falling</title>
 </head>
 
 <body>
   <h1 class="h1 text-center">Fall Detector - Alert after falling for <span id="titleTime">5</span>s</h1>
   <div class="container-fuild">
     <div class="row" style="width: 100%;">
-      <div class="col-xl-9">
-        <form id="form-connect">
-          <div class="input-group">
-            <div class="col-12 col-md-2 mb-3">
-              <select class="form-select" id="camera-select"></select>
-            </div>
-            <div class="col-12 col-md-2 mb-3">
-              <select class="form-select col-sm-12 col-md-1" id="speed-select">
-                <option value=1000>1/s</option>
-                <option value=500>2/s</option>
-              </select>
-            </div>
-            <div class="col-12 col-md-2 mb-3">
-              <select class="form-select col-sm-12 col-md-1" id="wait-select" onchange="changeTitle(this.value)">
-                <option value=5>5s</option>
-                <option value=10>10s</option>
-                <option value=20>20s</option>
-              </select>
-            </div>
-            <div class="col-12 col-md-2 mb-3">
-              <select class="form-select col-sm-12 col-md-1" id="model-select">
-                <option value=1>Model background</option>
-                <option value=2>Model base</option>
-              </select>
-            </div>
-            <button class="btn btn-success col-12 col-md-2 mb-3" type="submit" id="button-start">Start</button>
-            <button class="btn btn-danger col-12 col-md-2 mb-3" type="submit" id="button-stop" disabled>Stop</button>
+      <form id="form-connect">
+        <div class="input-group">
+          <div class="col-12 col-md-1 mb-3">
+            <select class="form-select" id="camera-select"></select>
           </div>
-        </form>
+          <div class="col-12 col-md-1 mb-3">
+            <select class="form-select" id="speed-select">
+              <option value=1000>1/s</option>
+              <option value=500>2/s</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-1 mb-3">
+            <select class="form-select" id="wait-select" onchange="changeTitle(this.value)">
+              <option value=5>5s</option>
+              <option value=10>10s</option>
+              <option value=20>20s</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-1 mb-3">
+            <select class="form-select" id="model-select">
+              <option value=1>Model background</option>
+              <option value=2>Model base</option>
+            </select>
+          </div>
+          <div class="row col-12 col-md-2 mb-3">
+            <div class="col-10">
+              <input type="range" class="form-range" value="60" min="60" max="100" step="1" id="confidence" onchange="changeConfidence(this.value)">
+            </div>
+            <span id="value-confidence" class="col-2">60</span>
+          </div>
+          <div class="col-12 col-md-2 mb-3"><button class="btn btn-success w-100" type="submit" id="button-start">Start</button></div>
+          <div class="col-12 col-md-2 mb-3"><button class="btn btn-danger w-100" type="submit" id="button-stop" disabled>Stop</button></div>
+        </div>
+      </form>
+      <div class="col-xl-9">
+
         <div class="position-relative embed-responsive embed-responsive-16by9">
           <video class="embed-responsive-item" id="video" style="width: 100%;"></video>
           <canvas id="canvas" class="position-absolute top-0 start-0" style="display: none;"></canvas>

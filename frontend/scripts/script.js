@@ -5,6 +5,11 @@ function changeTitle(value) {
 
 }
 
+function changeConfidence(value) {
+  document.getElementById("value-confidence").innerHTML = value
+
+}
+
 function createResponse(data) {
   data.event.forEach(event => {
     if(chat.children.length > 0 && chat.children[0].clientHeight * (chat.children.length+2)  >= video.clientHeight){
@@ -99,14 +104,14 @@ function encode (input) {
 const chat = document.getElementById('chat');
 
 
-const startDetection = (video, canvas, deviceId, speed, wait, model) => {
+const startDetection = (video, canvas, deviceId, speed, wait, model, confidence) => {
   var proto;
   if(document.location.protocol == 'http:'){
     proto = 'ws';
   } else {
     proto = 'wss';
   }
-  const socket = new WebSocket(proto+'://'+window.location.hostname+':'+window.location.port+'/fall-detection-classes/'+speed+'/'+wait+'/'+model);
+  const socket = new WebSocket(proto+'://'+window.location.hostname+':'+window.location.port+'/fall-detection-classes/'+speed+'/'+wait+'/'+model+'/'+confidence);
   socket.binaryType = "arraybuffer";
   let intervalId;
 
@@ -205,6 +210,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
   const speedSelect = document.getElementById('speed-select');
   const waitSelect = document.getElementById('wait-select');
   const modelSelect = document.getElementById('model-select');
+  const confidenceSelect = document.getElementById('confidence');
   let socket;
 
   // List available cameras and fill select
@@ -231,7 +237,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
     } else {
       //const IMAGE_INTERVAL_MS = speedSelect.value;
       const deviceId = cameraSelect.value;
-      socket = startDetection(video, canvas, deviceId, speedSelect.value, waitSelect.value, modelSelect.value);
+      socket = startDetection(video, canvas, deviceId, speedSelect.value, waitSelect.value, modelSelect.value, confidenceSelect.value);
     }
   });
 

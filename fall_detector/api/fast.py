@@ -35,8 +35,8 @@ class ConnectionManager:
 
 manager = ConnectionManager()
 
-@app.websocket("/fall-detection/{speed}/{wait}/{model}")
-async def fall_detection(websocket: WebSocket, speed: int, wait: int, model: str):
+@app.websocket("/fall-detection/{speed}/{wait}/{model}/{confidence}")
+async def fall_detection(websocket: WebSocket, speed: int, wait: int, model: str, confidence: int):
     model = YOLO(MODEL_PATCH[model])
     await manager.connect(websocket)
     try:
@@ -46,7 +46,7 @@ async def fall_detection(websocket: WebSocket, speed: int, wait: int, model: str
             bytes = await websocket.receive_bytes()
             data = np.frombuffer(bytes, dtype=np.uint8)
             img = cv2.imdecode(data, 1)
-            img, detections = detection(model, img, CLASS_NAMES, MODEL_CONFIDENCE, MODEL_CONFIDENCE_VISIBILITY)
+            img, detections = detection(model, img, CLASS_NAMES, confidence, MODEL_CONFIDENCE_VISIBILITY)
             if alert_send == False and (falling_time := fall_detection_time(detections, falling_time)) == (wait * (1000/speed)):
                 print('Alert was sending')
                 alert_send = True
@@ -56,8 +56,8 @@ async def fall_detection(websocket: WebSocket, speed: int, wait: int, model: str
     except WebSocketDisconnect:
         manager.disconnect(websocket)
 
-@app.websocket("/fall-detection-classes/{speed}/{wait}/{model}")
-async def fall_detection_json(websocket: WebSocket, speed: int, wait: int, model: str):
+@app.websocket("/fall-detection-classes/{speed}/{wait}/{model}/{confidence}")
+async def fall_detection_json(websocket: WebSocket, speed: int, wait: int, model: str, confidence: int):
     model = YOLO(MODEL_PATCH[model])
     await manager.connect(websocket)
     try:
@@ -67,7 +67,7 @@ async def fall_detection_json(websocket: WebSocket, speed: int, wait: int, model
             bytes = await websocket.receive_bytes()
             data = np.frombuffer(bytes, dtype=np.uint8)
             img = cv2.imdecode(data, 1)
-            img, detections = detection_json(model, img, CLASS_NAMES, MODEL_CONFIDENCE, MODEL_CONFIDENCE_VISIBILITY)
+            img, detections = detection_json(model, img, CLASS_NAMES, confidence, MODEL_CONFIDENCE_VISIBILITY)
             if alert_send == False and (falling_time := fall_detection_time(detections, falling_time)) == (wait * (1000/speed)):
                 alert(img, encode_param)
                 await manager.send_message(build_message('alert', [ALERT]), websocket)

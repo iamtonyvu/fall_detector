@@ -1,4 +1,4 @@
-FROM ultralytics/ultralytics:latest-cpu
+FROM ultralytics/ultralytics:8.1.24-cpu
 
 COPY fall_detector /fall_detector
 COPY requirements_ultra.txt /requirements_ultra.txt
