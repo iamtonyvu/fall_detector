@@ -99,14 +99,20 @@ function encode (input) {
 const chat = document.getElementById('chat');
 
 
-const startDetection = (video, canvas, deviceId, speed, wait, model) => {
+const startDetection = (video, canvas, type, deviceId, speed, wait, model) => {
   var proto;
   if(document.location.protocol == 'http:'){
     proto = 'ws';
   } else {
     proto = 'wss';
   }
-  const socket = new WebSocket(proto+'://'+window.location.hostname+':'+window.location.port+'/fall-detection-classes/'+speed+'/'+wait+'/'+model);
+  var path;
+  if(type == 1) {
+    path = "fall-detection-classes"
+  } else {
+    path = "fall-detection"
+  }
+  const socket = new WebSocket(proto+'://'+window.location.hostname+':'+window.location.port+'/'+path+'/'+speed+'/'+wait+'/'+model);
   socket.binaryType = "arraybuffer";
   let intervalId;
 
@@ -156,15 +162,19 @@ const startDetection = (video, canvas, deviceId, speed, wait, model) => {
     //var detection = document.getElementById('detection');
     //detection.innerHTML = detection.innerHTML+event.data+'\n';
     //detection.scrollTop = detection.scrollHeight;
-    data = JSON.parse(event.data)
-    createResponse(data)
+    var typeSelect = document.getElementById('type-select');
+    if(typeSelect.value == 1){
+      data = JSON.parse(event.data)
+      createResponse(data)
+    } else {
+      var arrayBuffer = event.data;
+      var bytes = new Uint8Array(arrayBuffer);
+      var image = document.getElementById('image');
+      //console.log(arrayBuffer.getBytes())
+      image.src = 'data:image/jpg;base64,'+encode(bytes);
+    }
 
-    //var arrayBuffer = event.data;
-    //var bytes = new Uint8Array(arrayBuffer);
-    //console.log(bytes)
-    //var image = document.getElementById('image');
-    //console.log(arrayBuffer.getBytes())
-    //image.src = 'data:image/jpg;base64,'+encode(bytes);
+
 
     //blob = new Blob(event.data[0], {type: 'image/jpeg'});
     //canvas.getContext('2d').drawImage(img);
@@ -193,6 +203,7 @@ const startDetection = (video, canvas, deviceId, speed, wait, model) => {
     chat.innerHTML = '';
     video.removeAttribute('src');
     video.load()
+    image.removeAttribute('src');
   });
 
   return socket;
@@ -200,7 +211,9 @@ const startDetection = (video, canvas, deviceId, speed, wait, model) => {
 
 window.addEventListener('DOMContentLoaded', (event) => {
   const video = document.getElementById('video');
+  const image = document.getElementById('image');
   const canvas = document.getElementById('canvas');
+  const typeSelect = document.getElementById('type-select');
   const cameraSelect = document.getElementById('camera-select');
   const speedSelect = document.getElementById('speed-select');
   const waitSelect = document.getElementById('wait-select');
@@ -229,9 +242,15 @@ window.addEventListener('DOMContentLoaded', (event) => {
     if (document.getElementById("button-start").disabled) {
       socket.close();
     } else {
-      //const IMAGE_INTERVAL_MS = speedSelect.value;
+      if(typeSelect.value == 1){
+        video.style.display = "block"
+        image.style.display = "none"
+      } else {
+        video.style.display = "none"
+        image.style.display = "block"
+      }
       const deviceId = cameraSelect.value;
-      socket = startDetection(video, canvas, deviceId, speedSelect.value, waitSelect.value, modelSelect.value);
+      socket = startDetection(video, canvas, typeSelect.value, deviceId, speedSelect.value, waitSelect.value, modelSelect.value);
     }
   });
 

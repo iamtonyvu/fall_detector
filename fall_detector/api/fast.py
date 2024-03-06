@@ -30,9 +30,8 @@ class ConnectionManager:
     async def send_image(self, message: str, websocket: WebSocket):
         await websocket.send_bytes(message)
 
-    async def send_message(self, message: str):
-        for connection in self.active_connections:
-            await connection.send_json(message)
+    async def send_message(self, message: str, websocket: WebSocket):
+            await websocket.send_json(message)
 
 manager = ConnectionManager()
 
@@ -52,7 +51,7 @@ async def fall_detection(websocket: WebSocket, speed: int, wait: int, model: str
                 print('Alert was sending')
                 alert_send = True
             ret, buffer = cv2.imencode('.jpg', img, encode_param)
-            await manager.send_bytes(buffer.tobytes())
+            await manager.send_image(buffer.tobytes(), websocket)
 
     except WebSocketDisconnect:
         manager.disconnect(websocket)
@@ -71,9 +70,9 @@ async def fall_detection_json(websocket: WebSocket, speed: int, wait: int, model
             img, detections = detection_json(model, img, CLASS_NAMES, MODEL_CONFIDENCE, MODEL_CONFIDENCE_VISIBILITY)
             if alert_send == False and (falling_time := fall_detection_time(detections, falling_time)) == (wait * (1000/speed)):
                 alert(img, encode_param)
-                await manager.send_message(build_message('alert', [ALERT]))
+                await manager.send_message(build_message('alert', [ALERT]), websocket)
                 alert_send = True
-            await manager.send_message(build_message('message', list(detections.values())))
+            await manager.send_message(build_message('message', list(detections.values())), websocket)
 
     except WebSocketDisconnect:
         manager.disconnect(websocket)

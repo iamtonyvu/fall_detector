@@ -39,13 +39,20 @@
         <form id="form-connect">
           <div class="input-group">
             <div class="col-12 col-md-2 mb-3">
+              <select class="form-select" id="type-select">
+                <option value=1>Demo</option>
+                <option value=2>Stream</option>
+              </select>
+            </div>
+            <div class="col-12 col-md-2 mb-3">
               <select class="form-select" id="camera-select"></select>
             </div>
             <div class="col-12 col-md-2 mb-3">
               <select class="form-select col-sm-12 col-md-1" id="speed-select">
                 <option value=1000>1/s</option>
                 <option value=500>2/s</option>
-                <option value=200>5/s</option>
+                <option value=100>10/s</option>
+                <option value=50>20/s</option>
               </select>
             </div>
             <div class="col-12 col-md-2 mb-3">
@@ -62,12 +69,13 @@
                 <!--<option value=3>Model YOLOV9</option>-->
               </select>
             </div>
-            <button class="btn btn-success col-12 col-md-2 mb-3" type="submit" id="button-start">Start</button>
-            <button class="btn btn-danger col-12 col-md-2 mb-3" type="submit" id="button-stop" disabled>Stop</button>
+            <button class="btn btn-success col-12 col-md-1 mb-3" type="submit" id="button-start">Start</button>
+            <button class="btn btn-danger col-12 col-md-1 mb-3" type="submit" id="button-stop" disabled>Stop</button>
           </div>
         </form>
         <div class="position-relative embed-responsive embed-responsive-16by9">
           <video class="embed-responsive-item" id="video" style="width: 100%;"></video>
+          <img class="embed-responsive-item" style="width: 100%;" id="image"></img>
           <canvas id="canvas" class="position-absolute top-0 start-0" style="display: none;"></canvas>
         </div>
       </div>
