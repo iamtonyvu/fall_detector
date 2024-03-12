@@ -1,1 +1,1 @@
-# Fall detecter
+# Fall detector
