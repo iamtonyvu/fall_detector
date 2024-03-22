@@ -6,17 +6,19 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from starlette.staticfiles import StaticFiles
 from fall_detector.params import *
 from fall_detector.utils.fall_detection import fall_detection_time
-from fall_detector.ml_logic.predict import detection, detection_json
+from fall_detector.ml_logic.predict import detection
 from fall_detector.alert_slack.alert_to_slack import alert
 from fall_detector.utils.fall_detection import build_message
 
+# Init FastAPI
 app = FastAPI()
 
-#model = YOLO(MODEL_PATCH)
-
+# Init compression level
 encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), MODEL_COMPRESSION]
 
 class ConnectionManager:
+    """Classe for manage connection
+    """
     def __init__(self):
         self.active_connections: list[WebSocket] = []
 
@@ -33,6 +35,8 @@ class ConnectionManager:
     async def send_message(self, message: str, websocket: WebSocket):
         await websocket.send_json(message)
 
+
+# Initialization of connection manager
 manager = ConnectionManager()
 
 @app.websocket("/fall-detection/{speed}/{wait}/{model}/{confidence}")
@@ -58,6 +62,15 @@ async def fall_detection(websocket: WebSocket, speed: int, wait: int, model: str
 
 @app.websocket("/fall-detection-classes/{speed}/{wait}/{model}/{confidence}")
 async def fall_detection_json(websocket: WebSocket, speed: int, wait: int, model: str, confidence: int):
+    """Fonction used for detection et sending message for the demo web page
+
+    Args:
+        websocket (WebSocket): 
+        speed (int): Time between each frame
+        wait (int): Waiting time for sending alert
+        model (str): Model to select
+        confidence (int): Confidence level
+    """
     model = YOLO(MODEL_PATCH[model])
     await manager.connect(websocket)
     try:
@@ -67,7 +80,7 @@ async def fall_detection_json(websocket: WebSocket, speed: int, wait: int, model
             bytes = await websocket.receive_bytes()
             data = np.frombuffer(bytes, dtype=np.uint8)
             img = cv2.imdecode(data, 1)
-            img, detections = detection_json(model, img, CLASS_NAMES, confidence, MODEL_CONFIDENCE_VISIBILITY)
+            img, detections = detection(model, img, CLASS_NAMES, confidence, MODEL_CONFIDENCE_VISIBILITY)
             if alert_send == False and (falling_time := fall_detection_time(detections, falling_time)) == (wait * (1000/speed)):
                 alert(img, encode_param)
                 await manager.send_message(build_message('alert', [ALERT]), websocket)
@@ -77,6 +90,7 @@ async def fall_detection_json(websocket: WebSocket, speed: int, wait: int, model
     except WebSocketDisconnect:
         manager.disconnect(websocket)
 
+# Frontend
 app.mount("/", StaticFiles(directory=FRONTEND_PATH, html=True), name="frontend")
 
 

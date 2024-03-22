@@ -12,7 +12,7 @@
 
 * pyhton
   ```sh
-  python fall_detector/fall_detector/api/fast.py
+  python fall_detector/api/fast.py
   ```
 
 ### Docker
