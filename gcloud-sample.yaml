@@ -1,7 +1,7 @@
 apiVersion: serving.knative.dev/v1
 kind: Service
 metadata:
-  name: fall-detector-api
+  name: NAME_APP
   annotations:
     run.googleapis.com/launch-stage: BETA
 spec:
@@ -11,7 +11,7 @@ spec:
         autoscaling.knative.dev/maxScale: '1'
     spec:
       containers:
-      - image: europe-west1-docker.pkg.dev/macro-pulsar-410607/fall-detector/api:prod
+      - image: DOCKER_IMAGE
         resources:
             limits:
               cpu: 2000m
@@ -26,6 +26,6 @@ spec:
       - name: configuration
         secret:
           items:
-          - key: latest
+          - key: KEY
             path: config-docker.yaml
-          secretName: fall-detector-secret
+          secretName: SECRET_NAME

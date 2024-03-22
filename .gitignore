@@ -5,5 +5,7 @@ model
 **/__pycache__/**
 config-docker.yaml
 config.yaml
+gcloud.yaml
+docker-compose.yml
 fall_detector.egg-info
 .DS_Store

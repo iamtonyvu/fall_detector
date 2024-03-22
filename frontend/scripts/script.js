@@ -1,10 +1,5 @@
 //const IMAGE_INTERVAL_MS = 1000;
 
-function changeTitle(value) {
-  document.getElementById("titleTime").innerHTML = value
-
-}
-
 function changeConfidence(value) {
   document.getElementById("value-confidence").innerHTML = value
 

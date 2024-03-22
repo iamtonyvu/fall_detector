@@ -1,6 +1,6 @@
 services:
   backend-api:
-    image: europe-west1-docker.pkg.dev/macro-pulsar-410607/fall-detector/api:prod
+    image: DOCKER_IMAGE
     volumes:
       - ./config-docker.yaml:/config/config-docker.yaml
     environment:
