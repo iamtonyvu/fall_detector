@@ -1,6 +1,5 @@
 # Fall detector
 
-
 ### Prerequisites
 
 * pip
