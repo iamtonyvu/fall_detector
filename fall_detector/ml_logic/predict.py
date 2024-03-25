@@ -4,15 +4,36 @@ import math
 from fall_detector.params import *
 
 def detection(model: YOLO, img: cv2.typing.MatLike, classNames: dict, confidence_indice: int = 50, show_confidence: bool = False):
+    """Predict classNames from image with YOLO model and return image with boxes and class detected
+
+    Args:
+        model (YOLO): Yolo model
+        img (cv2.typing.MatLike): Image for prediction
+        classNames (dict): Labels to predict
+        confidence_indice (int, optional): Confidence level to predict. Defaults to 50.
+        show_confidence (bool, optional): Defaults to False.
+
+    Returns:
+        img (cv2.typing.MatLike): Image predicted with boxes
+        detections (dict): Labels predicted
+    """
     results = model.predict(img, classes=MODEL_CLASSES, verbose=MODEL_VERBOSE)
     return prediction_result(img, results, classNames, confidence_indice, show_confidence)
-
-def detection_json(model: YOLO, img: cv2.typing.MatLike, classNames: dict, confidence_indice: int = 50, show_confidence: bool = False) -> dict:
-    results = model.predict(img, classes=MODEL_CLASSES, verbose=MODEL_VERBOSE)
-    return prediction_result(img, results, classNames, confidence_indice, show_confidence)
-
 
 def prediction_result(img: cv2.typing.MatLike, results: list, classNames: dict, confidence_indice: int = 50, show_confidence: bool = False):
+    """return image with boxes and class detected
+
+    Args:
+        img (cv2.typing.MatLike): Image for drawing boxes
+        results (list): Result of predoction
+        classNames (dict): Labels to predict
+        confidence_indice (int, optional): Confidence level to predict. Defaults to 50.
+        show_confidence (bool, optional): Defaults to False.
+
+    Returns:
+        img (cv2.typing.MatLike): Image predicted with boxes
+        detections (dict): Labels predicted
+    """
     detections = {}
     for r in results:
         boxes = r.boxes
@@ -42,6 +63,9 @@ def prediction_result(img: cv2.typing.MatLike, results: list, classNames: dict, 
 
 
 if __name__ == '__main__':
+    """
+    Test prediction
+    """
     model = YOLO(MODEL_PATCH)
     img = cv2.imread(MODEL_IMAGE_TEST)
     cv2.imshow('Result', detection(model,img,CLASS_NAMES, MODEL_CONFIDENCE, MODEL_CONFIDENCE_VISIBILITY))
